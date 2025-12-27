@@ -35,4 +35,4 @@ Here Im going to list important virables generate by the code (unpack part)<br/>
 Here is an example<br/>
 say if we have `existed_board_id = [Bid1,Bid2,...]`,`existed_channel_id = [Cid1,Cid2,...]`,`existed_time_stamp = [TS1,TS2,...]`
 `pack_pointer_board_channel_timeStamp_valid[0,1,0] == True` means there is a data package with `board id = Bid1` and `channel id = Cid2` at `time stamp = TS1` (`if_data_package[pack_pointer_board_channel_timeStamp[0,1,0]] == True`). The index of head of this package in `file` is `head[pack_pointer_board_channel_timeStamp[0,1,0]]`. Datapoints infomation can be found with `wave_sample_data[idx][wave_sample_data_valid[idx]]`<br/>
-External trigger infomation is processed seperately, contained in `ext_tri` and `ext_tri_counts` means how many external datapackages found. 
+External trigger infomation is processed seperately, contained in `ext_tri` and `ext_tri_count` means how many external datapackages found. 
