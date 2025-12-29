@@ -32,7 +32,21 @@ Here Im going to list important virables generate by the code (unpack part)<br/>
 `existed_board_id`,`existed_channel_id`,`existed_time_stamp` are virables contain all possible number of board id, channel id and time stamp existed in the file, respectively.<br/>
 `pack_pointer_board_channel_timeStamp` contians pointers labeled with `board id`,`channel id` and `time stamp`<br/>
 `pack_pointer_board_channel_timeStamp_valid` contians boolean value if a package labeled with `board id`,`channel id` and `time stamp` exists<br/>
-Here is an example<br/>
+### Here is an example<br/>
 say if we have `existed_board_id = [Bid1,Bid2,...]`,`existed_channel_id = [Cid1,Cid2,...]`,`existed_time_stamp = [TS1,TS2,...]`
-`pack_pointer_board_channel_timeStamp_valid[0,1,0] == True` means there is a data package with `board id = Bid1` and `channel id = Cid2` at `time stamp = TS1` (`if_data_package[pack_pointer_board_channel_timeStamp[0,1,0]] == True`). The index of head of this package in `file` is `head[pack_pointer_board_channel_timeStamp[0,1,0]]`. Datapoints infomation can be found with `wave_sample_data[idx][wave_sample_data_valid[idx]]`<br/>
-External trigger infomation is processed seperately, contained in `ext_tri` and `ext_tri_count` means how many external datapackages found. 
+`pack_pointer_board_channel_timeStamp_valid[0,1,0] == True` means there is a data package with `board id = Bid1` and `channel id = Cid2` at `time stamp = TS1` (`if_data_package[pack_pointer_board_channel_timeStamp[0,1,0]] == True`). The index of head of this package in `file` is `head[pack_pointer_board_channel_timeStamp[0,1,0]]`. Datapoints infomation can be found with `wave_sample_data[idx][wave_sample_data_valid[idx]]`, where `idx = pack_pointer_board_channel_timeStamp[board_id_idx,channel_id_idx,timeStamp_idx]`. In this case, `idx = pack_pointer_board_channel_timeStamp[0,1,0]`<br/>
+External trigger infomation is processed seperately, contained in `ext_tri` and `num_ext_tri` means how many external datapackages found. Here is the code print all external datapackage, the for loop scan all possible index that contain externak trigger information.
+```
+# process ext tri pack(if found)
+if num_ext_tri != 0:
+    print(f"{num_ext_tri} external trigger package found")
+    for idx_tri in range(num_ext_tri):
+        #print(f"Raw package{file[idx_head[0,ext_tri[idx_tri]]:idx_head[0,ext_tri[idx_tri]]+32]}")
+        #print(ext_tri[idx_tri])
+        exceed = np.unpackbits(file[idx_head[0,ext_tri[idx_tri]]+13])[-1]
+        ext_tri_count = file[idx_head[0,ext_tri[idx_tri]]+14]*256 + file[idx_head[0,ext_tri[idx_tri]]+15]
+        ext_tri_stamp_exceed = np.unpackbits(file[idx_head[0,ext_tri[idx_tri]]+21])[-1]
+        ext_tri_source_stamp = sub_pack_trigger_source_stamp[ext_tri[idx_tri]]
+        #print(f"External trigger {idx_tri+1}. Trigger count: {ext_tri_count} (exceed:{exceed}),Trigger time stamp: {ext_tri_source_stamp}(exceed:{ext_tri_stamp_exceed})")
+else: print("No external trigger package found")
+```
